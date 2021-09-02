@@ -2,6 +2,9 @@ require("hardhat-deploy");
 require("hardhat-deploy-ethers");
 
 const fs = require("fs");
+const dotenv = require("dotenv");
+
+dotenv.config();
 
 const defaultNetwork = "rinkeby";
 
@@ -60,3 +63,21 @@ module.exports = {
       apiKey: `${process.env.ETHERSCAN_API_KEY}`,
     },
   };
+
+  /**
+ * Deploys the Staking Rewards contract(s).
+ *
+ * Example usage:
+ * npx hardhat deploy \
+ *   --network rinkeby
+ */
+task(
+  "deploy",
+  "Deploys the Staking Rewards contract(s)"
+)
+  .setAction(async (taskArgs) => {
+    // TODO
+    console.log('deploying...')
+  });
+
+  module.exports = {};

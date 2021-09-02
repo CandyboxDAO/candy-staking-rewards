@@ -1,3 +1,4 @@
+// SPDX-License-Identifier: MIT
 pragma solidity ^0.8.7;
 
 import "@openzeppelin/contracts/utils/math/Math.sol";
@@ -5,43 +6,12 @@ import "@openzeppelin/contracts/utils/math/SafeMath.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 
-// https://docs.synthetix.io/contracts/source/interfaces/istakingrewards
-interface IStakingRewards {
-    // Views
-
-    function balanceOf(address account) external view returns (uint256);
-
-    function earned(address account) external view returns (uint256);
-
-    function getRewardForDuration() external view returns (uint256);
-
-    function lastTimeRewardApplicable() external view returns (uint256);
-
-    function rewardPerToken() external view returns (uint256);
-
-    function rewardsDistribution() external view returns (address);
-
-    function rewardsToken() external view returns (address);
-
-    function totalSupply() external view returns (uint256);
-
-    // Mutative
-
-    function exit() external;
-
-    function getReward() external;
-
-    function stake(uint256 amount) external;
-
-    function withdraw(uint256 amount) external;
-}
-
 // https://docs.synthetix.io/contracts/source/contracts/owned
 contract Owned {
     address public owner;
     address public nominatedOwner;
 
-    constructor(address _owner) public {
+    constructor(address _owner) {
         require(_owner != address(0), "Owner address cannot be 0");
         owner = _owner;
         emit OwnerChanged(address(0), _owner);
@@ -73,10 +43,10 @@ contract Owned {
 }
 
 // https://docs.synthetix.io/contracts/source/contracts/rewardsdistributionrecipient
-contract RewardsDistributionRecipient is Owned {
+abstract contract RewardsDistributionRecipient is Owned {
     address public rewardsDistribution;
 
-    function notifyRewardAmount(uint256 reward) external;
+    function notifyRewardAmount(uint256 reward) external virtual;
 
     modifier onlyRewardsDistribution() {
         require(msg.sender == rewardsDistribution, "Caller is not RewardsDistribution contract");
@@ -89,11 +59,11 @@ contract RewardsDistributionRecipient is Owned {
 }
 
 // https://docs.synthetix.io/contracts/source/contracts/pausable
-contract Pausable is Owned {
+abstract contract Pausable is Owned {
     uint public lastPauseTime;
     bool public paused;
 
-    constructor() internal {
+    constructor() {
         // This contract is abstract, and thus cannot be instantiated directly
         require(owner != address(0), "Owner must be set");
         // Paused will be false, and lastPauseTime will be 0 upon initialisation
@@ -114,7 +84,7 @@ contract Pausable is Owned {
 
         // If applicable, set the last pause time.
         if (paused) {
-            lastPauseTime = now;
+            lastPauseTime = block.timestamp;
         }
 
         // Let everyone know that our pause state has changed.
@@ -130,7 +100,7 @@ contract Pausable is Owned {
 }
 
 // https://docs.synthetix.io/contracts/source/contracts/stakingrewards
-contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, ReentrancyGuard, Pausable {
+contract StakingRewards is RewardsDistributionRecipient, ReentrancyGuard, Pausable {
     using SafeMath for uint256;
     using SafeERC20 for IERC20;
 
@@ -157,7 +127,7 @@ contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, Reentr
         address _rewardsDistribution,
         address _rewardsToken,
         address _stakingToken
-    ) public Owned(_owner) {
+    ) Owned(_owner) {
         rewardsToken = IERC20(_rewardsToken);
         stakingToken = IERC20(_stakingToken);
         rewardsDistribution = _rewardsDistribution;
@@ -229,7 +199,7 @@ contract StakingRewards is IStakingRewards, RewardsDistributionRecipient, Reentr
 
     /* ========== RESTRICTED FUNCTIONS ========== */
 
-    function notifyRewardAmount(uint256 reward) external onlyRewardsDistribution updateReward(address(0)) {
+    function notifyRewardAmount(uint256 reward) external override onlyRewardsDistribution updateReward(address(0)) {
         if (block.timestamp >= periodFinish) {
             rewardRate = reward.div(rewardsDuration);
         } else {
