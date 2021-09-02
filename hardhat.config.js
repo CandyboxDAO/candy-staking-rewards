@@ -18,71 +18,56 @@ function mnemonic() {
 }
 
 module.exports = {
-    defaultNetwork,
+  defaultNetwork,
 
-    networks: {
-      hardhat: {
-        chainId: 1337,
-      },
-      localhost: {
-        url: "http://localhost:8545",
-      },
-      kovan: {
-        url: `https://kovan.infura.io/v3/${process.env.INFURA_ID}`,
-        accounts: {
-          mnemonic: mnemonic(),
-        },
-      },
-      rinkeby: {
-        url: `https://rinkeby.infura.io/v3/${process.env.INFURA_ID}`,
-        accounts: {
-          mnemonic: mnemonic(),
-        },
-      },
-      mainnet: {
-        url: `https://mainnet.infura.io/v3/${process.env.INFURA_ID}`,
-        accounts: {
-          mnemonic: mnemonic(),
-        },
+  networks: {
+    hardhat: {
+      chainId: 1337,
+    },
+    localhost: {
+      url: "http://localhost:8545",
+    },
+    kovan: {
+      url: `https://kovan.infura.io/v3/${process.env.INFURA_ID}`,
+      accounts: {
+        mnemonic: mnemonic(),
       },
     },
-    solidity: {
-      compilers: [
-        {
-          version: "0.8.7",
-          settings: {
-            optimizer: {
-              enabled: true,
-              runs: 200,
-            },
+    rinkeby: {
+      url: `https://rinkeby.infura.io/v3/${process.env.INFURA_ID}`,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+    mainnet: {
+      url: `https://mainnet.infura.io/v3/${process.env.INFURA_ID}`,
+      accounts: {
+        mnemonic: mnemonic(),
+      },
+    },
+  },
+  solidity: {
+    compilers: [
+      {
+        version: "0.8.7",
+        settings: {
+          optimizer: {
+            enabled: true,
+            runs: 200,
           },
         },
-      ],
+      },
+    ],
+  },
+  etherscan: {
+    apiKey: `${process.env.ETHERSCAN_API_KEY}`,
+  },
+  namedAccounts: {
+    deployer: {
+      default: "0x754F37225CE0E30639093Af47C16ef057B544b4f"
     },
-    etherscan: {
-      apiKey: `${process.env.ETHERSCAN_API_KEY}`,
+    feeCollector: {
+      default: "0x754F37225CE0E30639093Af47C16ef057B544b4f"
     },
-  };
-
-  /**
- * Deploys the Staking Rewards contract(s).
- *
- * Example usage:
- * npx hardhat deploy \
- *   --network rinkeby
- */
-task(
-  "deploy",
-  "Deploys the Staking Rewards contract(s)"
-)
-  .setAction(async (taskArgs) => {
-    /*
-      TODO:
-        - Deploy ERC20 lp token and rewards token
-        - - Distribute initial supply to stakeholders
-        - Deploy staking rewards contract 
-    */
-    console.log('deploying...')
-  });
-
-  module.exports = {};
+  },
+};
