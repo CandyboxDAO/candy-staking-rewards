@@ -76,7 +76,12 @@ task(
   "Deploys the Staking Rewards contract(s)"
 )
   .setAction(async (taskArgs) => {
-    // TODO
+    /*
+      TODO:
+        - Deploy ERC20 lp token and rewards token
+        - - Distribute initial supply to stakeholders
+        - Deploy staking rewards contract 
+    */
     console.log('deploying...')
   });
 
