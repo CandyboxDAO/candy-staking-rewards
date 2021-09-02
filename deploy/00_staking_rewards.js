@@ -16,7 +16,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
 
   await deploy('StakingRewards', {
     from: deployer,
-    args: [deployer, deployer, freeERC20, freeERC20LPToken],
+    args: [deployer, deployer, freeERC20.address, freeERC20LPToken.address],
     log: true,
   });
 };
