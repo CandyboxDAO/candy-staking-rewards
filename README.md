@@ -1,6 +1,6 @@
 # staking-rewards
 
-Juicebox staking rewards (experimental)
+Candybox staking rewards (experimental)
 
 ## Deployments
 
